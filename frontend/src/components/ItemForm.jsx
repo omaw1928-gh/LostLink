@@ -32,7 +32,7 @@ const ItemForm = ({
   onSubmit,
   isSubmitting = false,
 }) => {
-  const { error: toastError, info } = useToast();
+  const { success, error: toastError, info } = useToast();
 
   const [formData, setFormData] = useState({
     title: '',
