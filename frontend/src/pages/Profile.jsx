@@ -62,7 +62,7 @@ const Profile = () => {
     try {
       setUploadingAvatar(true);
       info('Uploading new avatar...');
-      const res = await uploadImage(file);
+      const res = await uploadImage(file, 'profiles');
       if (res.success && res.data.url) {
         setFormData((prev) => ({ ...prev, profileImage: res.data.url }));
         await updateProfile({ profileImage: res.data.url });

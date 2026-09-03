@@ -25,5 +25,6 @@ yarn-error.log*
 # OS / Editor files
 .DS_Store
 Thumbs.db
+desktop.ini
 .vscode/
 .idea/

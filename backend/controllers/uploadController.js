@@ -17,13 +17,17 @@ const uploadImage = async (req, res, next) => {
     const apiKey = process.env.CLOUDINARY_API_KEY;
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
+    // Determine target subfolder in Cloudinary: lostlink/lost, lostlink/found, lostlink/profiles, etc.
+    const subfolder = (req.body.folder || req.body.type || 'items').toString().toLowerCase().trim();
+    const cloudinaryFolder = `lostlink/${subfolder}`;
+
     // Check if Cloudinary is configured with valid credentials
     if (cloudName && apiKey && apiSecret && !cloudName.includes('your_cloudinary')) {
       const uploadFromBuffer = (buffer) => {
         return new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
             {
-              folder: 'lostlink/items',
+              folder: cloudinaryFolder,
               transformation: [{ width: 1000, height: 1000, crop: 'limit', quality: 'auto' }],
             },
             (error, result) => {
@@ -40,21 +44,22 @@ const uploadImage = async (req, res, next) => {
 
       try {
         const result = await uploadFromBuffer(req.file.buffer);
-        console.log(`[Cloudinary] Successfully uploaded image: ${result.secure_url}`);
+        console.log(`[Cloudinary] Uploaded image to folder '${cloudinaryFolder}': ${result.secure_url}`);
 
         return res.status(200).json({
           success: true,
-          message: 'Image uploaded successfully to Cloudinary',
+          message: `Image uploaded successfully to Cloudinary folder '${cloudinaryFolder}'`,
           data: {
             url: result.secure_url,
             public_id: result.public_id,
+            folder: result.folder || cloudinaryFolder,
           },
         });
       } catch (uploadErr) {
         console.error(`[Cloudinary Upload Error] ${uploadErr.message || JSON.stringify(uploadErr)}`);
         return res.status(400).json({
           success: false,
-          message: `Cloudinary upload failed: ${uploadErr.message || 'Invalid credentials'}. Please verify CLOUDINARY_CLOUD_NAME in backend/.env.`,
+          message: `Cloudinary upload failed: ${uploadErr.message || 'Invalid credentials'}. Please verify CLOUDINARY_CLOUD_NAME, API_KEY, and API_SECRET in .env.`,
         });
       }
     } else {
@@ -67,6 +72,7 @@ const uploadImage = async (req, res, next) => {
         data: {
           url: base64Image,
           public_id: 'local_' + Date.now(),
+          folder: cloudinaryFolder,
         },
       });
     }

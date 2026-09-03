@@ -96,7 +96,8 @@ const ItemForm = ({
     try {
       setIsUploadingImage(true);
       info('Uploading image to Cloudinary...');
-      const res = await uploadImage(file);
+      const targetFolder = formData.type || 'items';
+      const res = await uploadImage(file, targetFolder);
       if (res.success && res.data.url) {
         setFormData((prev) => ({ ...prev, image: res.data.url }));
         success('Image uploaded to Cloudinary successfully!');
