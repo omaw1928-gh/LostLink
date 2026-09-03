@@ -148,10 +148,14 @@ const ItemDetails = () => {
           <img
             src={
               item.image ||
-              'https://images.unsplash.com/photo-1586769852044-692d6e3703f0?w=1000&auto=format&fit=crop&q=80'
+              'https://tse1.mm.bing.net/th/id/OIP.44r8_lXZWi_ppSn3PuoLZAHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
             }
             alt={item.title}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              e.target.src =
+                'https://tse1.mm.bing.net/th/id/OIP.44r8_lXZWi_ppSn3PuoLZAHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3';
+            }}
           />
           <div className="absolute top-4 left-4 flex gap-2">
             <span

@@ -29,6 +29,7 @@ app.use(
 // CORS configuration
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:5173',
+  'https://lost-link-ten.vercel.app',
   'http://localhost:3000',
   'http://localhost:5174',
   'http://127.0.0.1:5173',
@@ -39,10 +40,14 @@ app.use(
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      if (
+        allowedOrigins.indexOf(origin) !== -1 ||
+        origin.endsWith('.vercel.app') ||
+        process.env.NODE_ENV !== 'production'
+      ) {
         return callback(null, true);
       }
-      return callback(null, true); // Permissive in dev to avoid deployment blockage
+      return callback(null, true); // Permissive fallback
     },
     credentials: true,
   })

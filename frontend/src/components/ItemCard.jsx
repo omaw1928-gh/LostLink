@@ -36,7 +36,7 @@ const ItemCard = ({ item }) => {
   // Default placeholder image based on category
   const defaultImage =
     item.image ||
-    'https://images.unsplash.com/photo-1586769852044-692d6e3703f0?w=600&auto=format&fit=crop&q=80';
+    'https://tse1.mm.bing.net/th/id/OIP.44r8_lXZWi_ppSn3PuoLZAHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3';
 
   return (
     <div className="group flex flex-col bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
@@ -59,11 +59,10 @@ const ItemCard = ({ item }) => {
         {/* Top Badges */}
         <div className="absolute top-3 left-3 flex items-center gap-2">
           <span
-            className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider shadow-md backdrop-blur-md ${
-              isLost
+            className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider shadow-md backdrop-blur-md ${isLost
                 ? 'bg-rose-500/95 text-white'
                 : 'bg-emerald-600/95 text-white'
-            }`}
+              }`}
           >
             {item.type}
           </span>
