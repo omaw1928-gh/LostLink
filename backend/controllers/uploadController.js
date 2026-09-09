@@ -22,7 +22,7 @@ const uploadImage = async (req, res, next) => {
     const cloudinaryFolder = `lostlink/${subfolder}`;
 
     // Check if Cloudinary is configured with valid credentials
-    if (cloudName && apiKey && apiSecret && !cloudName.includes('your_cloudinary')) {
+    if (cloudName && apiKey && apiSecret) {
       const uploadFromBuffer = (buffer) => {
         return new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
