@@ -76,33 +76,33 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#FFFBE3]">
       <div className="max-w-xl w-full space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <Link to="/" className="inline-flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-full bg-[#121212] flex items-center justify-center text-[#53FF73] shadow-md group-hover:scale-105 transition-transform">
+              <Sparkles className="w-5 h-5 fill-current" />
             </div>
-            <span className="font-bold text-2xl tracking-tight text-slate-900">
-              Lost<span className="text-brand-600">Link</span>
+            <span className="font-display font-bold text-2xl tracking-tight text-[#121212]">
+              Lost<span className="text-[#334FB4]">Link</span>
             </span>
           </Link>
-          <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="font-display text-2xl font-bold text-[#121212] tracking-tight">
             Create Student / Campus Account
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500">
+          <p className="text-xs text-[#121212]/70 font-medium">
             Join the verified campus network to report and recover lost belongings.
           </p>
         </div>
 
         {/* Register Card */}
-        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl space-y-5">
+        <div className="bg-white p-8 rounded-3xl border-2 border-[#121212] shadow-xl space-y-5">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Full Name <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+                Full Name <span className="text-rose-600">*</span>
               </label>
               <div className="relative">
                 <input
@@ -111,18 +111,18 @@ const Register = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Alex Rivera"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 bg-[#FFFBE3] border border-[#121212] rounded-2xl text-xs text-[#121212] font-semibold focus:bg-white focus:ring-2 focus:ring-[#334FB4] outline-none transition-all"
                   required
                 />
-                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                <User className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5" />
               </div>
             </div>
 
             {/* Email & Password */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Campus Email <span className="text-rose-500">*</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+                  Campus Email <span className="text-rose-600">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -131,16 +131,16 @@ const Register = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="student@campus.edu"
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-[#FFFBE3] border border-[#121212] rounded-2xl text-xs text-[#121212] font-semibold focus:bg-white focus:ring-2 focus:ring-[#334FB4] outline-none transition-all"
                     required
                   />
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <Mail className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Password <span className="text-rose-500">*</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+                  Password <span className="text-rose-600">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -149,10 +149,10 @@ const Register = () => {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Min. 6 characters"
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-[#FFFBE3] border border-[#121212] rounded-2xl text-xs text-[#121212] font-semibold focus:bg-white focus:ring-2 focus:ring-[#334FB4] outline-none transition-all"
                     required
                   />
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <Lock className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5" />
                 </div>
               </div>
             </div>
@@ -160,8 +160,8 @@ const Register = () => {
             {/* Phone & Department */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Phone Number <span className="text-slate-400 text-[10px] font-normal">(Optional)</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+                  Phone Number <span className="text-[#121212]/50 text-[10px] font-normal">(Optional)</span>
                 </label>
                 <div className="relative">
                   <input
@@ -169,15 +169,15 @@ const Register = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="+1 (555) 000-0000"
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none transition-all"
+                    placeholder="+91 9876543210"
+                    className="w-full pl-10 pr-4 py-3 bg-[#FFFBE3] border border-[#121212] rounded-2xl text-xs text-[#121212] font-semibold focus:bg-white focus:ring-2 focus:ring-[#334FB4] outline-none transition-all"
                   />
-                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <Phone className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
                   Academic Year
                 </label>
                 <div className="relative">
@@ -185,7 +185,7 @@ const Register = () => {
                     name="year"
                     value={formData.year}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none appearance-none transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-[#FFFBE3] border border-[#121212] rounded-2xl text-xs text-[#121212] font-semibold focus:bg-white focus:ring-2 focus:ring-[#334FB4] outline-none appearance-none transition-all"
                   >
                     {YEARS.map((y) => (
                       <option key={y} value={y}>
@@ -193,14 +193,14 @@ const Register = () => {
                       </option>
                     ))}
                   </select>
-                  <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+                  <Calendar className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5 pointer-events-none" />
                 </div>
               </div>
             </div>
 
             {/* Department */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
                 Department / Major
               </label>
               <div className="relative">
@@ -208,7 +208,7 @@ const Register = () => {
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none appearance-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 bg-[#FFFBE3] border border-[#121212] rounded-2xl text-xs text-[#121212] font-semibold focus:bg-white focus:ring-2 focus:ring-[#334FB4] outline-none appearance-none transition-all"
                 >
                   {DEPARTMENTS.map((dept) => (
                     <option key={dept} value={dept}>
@@ -216,7 +216,7 @@ const Register = () => {
                     </option>
                   ))}
                 </select>
-                <GraduationCap className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+                <GraduationCap className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5 pointer-events-none" />
               </div>
             </div>
 
@@ -225,17 +225,17 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 px-4 rounded-xl font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-lg shadow-brand-600/20 transition-all hover:scale-[1.01] flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3.5 px-4 rounded-full font-bold text-white bg-[#121212] hover:bg-[#334FB4] transition-all duration-200 flex items-center justify-center gap-2 uppercase tracking-wider text-xs border border-[#121212] disabled:opacity-50"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#53FF73]" />
                     Creating Profile...
                   </>
                 ) : (
                   <>
                     <span>Create Account</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 text-[#53FF73]" />
                   </>
                 )}
               </button>
@@ -243,10 +243,10 @@ const Register = () => {
           </form>
 
           {/* Bottom link */}
-          <div className="text-center pt-2 border-t border-slate-100">
-            <p className="text-xs text-slate-500">
+          <div className="text-center pt-2 border-t border-[#E5E0D8]">
+            <p className="text-xs text-[#121212]/70 font-medium">
               Already registered?{' '}
-              <Link to="/login" className="font-bold text-brand-600 hover:underline">
+              <Link to="/login" className="font-bold text-[#334FB4] hover:underline">
                 Sign In here
               </Link>
             </p>
@@ -258,3 +258,4 @@ const Register = () => {
 };
 
 export default Register;
+

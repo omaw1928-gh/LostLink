@@ -3,14 +3,12 @@ import { uploadImage } from '../services/uploadService';
 import { useToast } from '../context/ToastContext';
 import {
   Upload,
-  Image as ImageIcon,
   X,
   Loader2,
   Calendar,
   Clock,
   MapPin,
   Tag,
-  FileText,
   AlertCircle
 } from 'lucide-react';
 
@@ -82,7 +80,6 @@ const ItemForm = ({
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate size (5MB)
     if (file.size > 5 * 1024 * 1024) {
       toastError('Image size exceeds 5MB limit');
       return;
@@ -92,7 +89,6 @@ const ItemForm = ({
     const localPreviewUrl = URL.createObjectURL(file);
     setImagePreview(localPreviewUrl);
 
-    // Upload to server/Cloudinary
     try {
       setIsUploadingImage(true);
       info('Uploading image to Cloudinary...');
@@ -100,10 +96,10 @@ const ItemForm = ({
       const res = await uploadImage(file, targetFolder);
       if (res.success && res.data.url) {
         setFormData((prev) => ({ ...prev, image: res.data.url }));
-        success('Image uploaded to Cloudinary successfully!');
+        success('Image uploaded successfully!');
       }
     } catch (err) {
-      toastError(err.response?.data?.message || 'Failed to upload image to Cloudinary.');
+      toastError(err.response?.data?.message || 'Failed to upload image.');
     } finally {
       setIsUploadingImage(false);
     }
@@ -139,34 +135,32 @@ const ItemForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Type Toggle: Lost or Found */}
+      {/* Type Toggle */}
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+        <label className="block text-[10px] font-bold uppercase tracking-widest text-[#334FB4] mb-2">
           Report Category Type
         </label>
-        <div className="grid grid-cols-2 gap-3 p-1.5 bg-slate-100/80 rounded-2xl border border-slate-200">
+        <div className="grid grid-cols-2 gap-3 p-1.5 bg-[#FFFBE3] rounded-full border border-[#121212]">
           <button
             type="button"
             onClick={() => setFormData((prev) => ({ ...prev, type: 'lost' }))}
-            className={`py-3 px-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+            className={`py-2.5 px-4 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
               isLost
-                ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#FFD1DC] text-[#121212] border border-[#121212]'
+                : 'text-[#121212] hover:bg-white'
             }`}
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-200" />
             I Lost Something
           </button>
           <button
             type="button"
             onClick={() => setFormData((prev) => ({ ...prev, type: 'found' }))}
-            className={`py-3 px-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+            className={`py-2.5 px-4 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
               !isLost
-                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#53FF73] text-[#121212] border border-[#121212]'
+                : 'text-[#121212] hover:bg-white'
             }`}
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-200" />
             I Found Something
           </button>
         </div>
@@ -174,8 +168,8 @@ const ItemForm = ({
 
       {/* Item Title */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          Item Title <span className="text-rose-500">*</span>
+        <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+          Item Title <span className="text-rose-600">*</span>
         </label>
         <input
           type="text"
@@ -183,12 +177,12 @@ const ItemForm = ({
           value={formData.title}
           onChange={handleChange}
           placeholder={isLost ? 'e.g. Space Gray MacBook Air M2' : 'e.g. Sony Wireless Headphones in Black Case'}
-          className={`w-full px-4 py-3 rounded-xl border ${
-            formErrors.title ? 'border-rose-400 bg-rose-50/30' : 'border-slate-300'
-          } focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm transition-all`}
+          className={`w-full px-4 py-3 rounded-2xl border ${
+            formErrors.title ? 'border-rose-500 bg-rose-50' : 'border-[#121212] bg-white'
+          } focus:ring-2 focus:ring-[#334FB4] outline-none text-[#121212] text-xs font-medium transition-all`}
         />
         {formErrors.title && (
-          <p className="mt-1 text-xs text-rose-500 flex items-center gap-1">
+          <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
             <AlertCircle className="w-3.5 h-3.5" /> {formErrors.title}
           </p>
         )}
@@ -197,15 +191,15 @@ const ItemForm = ({
       {/* Category & Location */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-            Category <span className="text-rose-500">*</span>
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+            Category <span className="text-rose-600">*</span>
           </label>
           <div className="relative">
             <select
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm appearance-none transition-all"
+              className="w-full px-4 py-3 rounded-2xl border border-[#121212] bg-white focus:ring-2 focus:ring-[#334FB4] outline-none text-[#121212] text-xs font-medium appearance-none transition-all"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
@@ -213,13 +207,13 @@ const ItemForm = ({
                 </option>
               ))}
             </select>
-            <Tag className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5 pointer-events-none" />
+            <Tag className="w-4 h-4 text-[#334FB4] absolute right-3.5 top-3.5 pointer-events-none" />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-            Campus Location <span className="text-rose-500">*</span>
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+            Campus Location <span className="text-rose-600">*</span>
           </label>
           <div className="relative">
             <input
@@ -227,15 +221,15 @@ const ItemForm = ({
               name="location"
               value={formData.location}
               onChange={handleChange}
-              placeholder="e.g. Central Library, 2nd Floor Quiet Zone"
-              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                formErrors.location ? 'border-rose-400 bg-rose-50/30' : 'border-slate-300'
-              } focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm transition-all`}
+              placeholder="e.g. Central Library, 2nd Floor"
+              className={`w-full pl-10 pr-4 py-3 rounded-2xl border ${
+                formErrors.location ? 'border-rose-500 bg-rose-50' : 'border-[#121212] bg-white'
+              } focus:ring-2 focus:ring-[#334FB4] outline-none text-[#121212] text-xs font-medium transition-all`}
             />
-            <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+            <MapPin className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5" />
           </div>
           {formErrors.location && (
-            <p className="mt-1 text-xs text-rose-500 flex items-center gap-1">
+            <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
               <AlertCircle className="w-3.5 h-3.5" /> {formErrors.location}
             </p>
           )}
@@ -245,8 +239,8 @@ const ItemForm = ({
       {/* Date & Time */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-            Date {isLost ? 'Lost' : 'Found'} <span className="text-rose-500">*</span>
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+            Date {isLost ? 'Lost' : 'Found'} <span className="text-rose-600">*</span>
           </label>
           <div className="relative">
             <input
@@ -254,22 +248,22 @@ const ItemForm = ({
               name="date"
               value={formData.date}
               onChange={handleChange}
-              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                formErrors.date ? 'border-rose-400 bg-rose-50/30' : 'border-slate-300'
-              } focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm transition-all`}
+              className={`w-full pl-10 pr-4 py-3 rounded-2xl border ${
+                formErrors.date ? 'border-rose-500 bg-rose-50' : 'border-[#121212] bg-white'
+              } focus:ring-2 focus:ring-[#334FB4] outline-none text-[#121212] text-xs font-medium transition-all`}
             />
-            <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+            <Calendar className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5 pointer-events-none" />
           </div>
           {formErrors.date && (
-            <p className="mt-1 text-xs text-rose-500 flex items-center gap-1">
+            <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
               <AlertCircle className="w-3.5 h-3.5" /> {formErrors.date}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-            Approximate Time <span className="text-slate-400 text-xs font-normal">(Optional)</span>
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+            Approximate Time <span className="text-[#121212]/50 text-[10px] font-normal">(Optional)</span>
           </label>
           <div className="relative">
             <input
@@ -277,17 +271,17 @@ const ItemForm = ({
               name="time"
               value={formData.time}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm transition-all"
+              className="w-full pl-10 pr-4 py-3 rounded-2xl border border-[#121212] bg-white focus:ring-2 focus:ring-[#334FB4] outline-none text-[#121212] text-xs font-medium transition-all"
             />
-            <Clock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+            <Clock className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5 pointer-events-none" />
           </div>
         </div>
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          Detailed Description <span className="text-rose-500">*</span>
+        <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+          Detailed Description <span className="text-rose-600">*</span>
         </label>
         <textarea
           name="description"
@@ -295,47 +289,47 @@ const ItemForm = ({
           value={formData.description}
           onChange={handleChange}
           placeholder="Describe distinguishing features, stickers, serial details, color, markings, or brand..."
-          className={`w-full px-4 py-3 rounded-xl border ${
-            formErrors.description ? 'border-rose-400 bg-rose-50/30' : 'border-slate-300'
-          } focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm leading-relaxed transition-all`}
+          className={`w-full px-4 py-3 rounded-2xl border ${
+            formErrors.description ? 'border-rose-500 bg-rose-50' : 'border-[#121212] bg-white'
+          } focus:ring-2 focus:ring-[#334FB4] outline-none text-[#121212] text-xs leading-relaxed transition-all`}
         />
         {formErrors.description && (
-          <p className="mt-1 text-xs text-rose-500 flex items-center gap-1">
+          <p className="mt-1 text-xs text-rose-600 flex items-center gap-1 font-medium">
             <AlertCircle className="w-3.5 h-3.5" /> {formErrors.description}
           </p>
         )}
       </div>
 
-      {/* Image Upload with Preview */}
+      {/* Image Upload */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          Item Image <span className="text-slate-400 text-xs font-normal">(Optional, max 5MB)</span>
+        <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+          Item Photo <span className="text-[#121212]/50 text-[10px] font-normal">(Optional, max 5MB)</span>
         </label>
 
         {imagePreview ? (
-          <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 max-w-sm aspect-[16/10]">
+          <div className="relative rounded-2xl overflow-hidden border-2 border-[#121212] bg-[#FFFBE3] max-w-sm aspect-[16/10]">
             <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
             <button
               type="button"
               onClick={handleRemoveImage}
-              className="absolute top-3 right-3 p-1.5 bg-slate-900/80 text-white rounded-full hover:bg-rose-600 transition-colors shadow-md"
+              className="absolute top-3 right-3 p-1.5 bg-[#121212] text-white rounded-full hover:bg-rose-600 transition-colors shadow-md"
             >
               <X className="w-4 h-4" />
             </button>
             {isUploadingImage && (
-              <div className="absolute inset-0 bg-slate-900/60 flex flex-col items-center justify-center text-white gap-2">
-                <Loader2 className="w-6 h-6 animate-spin text-brand-400" />
-                <span className="text-xs font-medium">Uploading to Cloud...</span>
+              <div className="absolute inset-0 bg-[#121212]/70 flex flex-col items-center justify-center text-white gap-2">
+                <Loader2 className="w-6 h-6 animate-spin text-[#53FF73]" />
+                <span className="text-xs font-bold">Uploading Photo...</span>
               </div>
             )}
           </div>
         ) : (
-          <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 hover:border-brand-500 hover:bg-brand-50/30 rounded-2xl p-8 cursor-pointer transition-all">
-            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 mb-3">
-              <Upload className="w-6 h-6 text-brand-600" />
+          <label className="flex flex-col items-center justify-center border-2 border-dashed border-[#121212] hover:bg-[#FFFBE3] rounded-2xl p-8 cursor-pointer transition-all bg-white">
+            <div className="w-10 h-10 rounded-full bg-[#EFE3FF] text-[#334FB4] flex items-center justify-center mb-2 border border-[#334FB4]">
+              <Upload className="w-5 h-5" />
             </div>
-            <p className="text-sm font-semibold text-slate-700">Click to upload or drag & drop</p>
-            <p className="text-xs text-slate-400 mt-1">PNG, JPG, WEBP, or GIF up to 5MB</p>
+            <p className="text-xs font-bold text-[#121212]">Click to upload or drag & drop</p>
+            <p className="text-[10px] text-[#121212]/60 mt-0.5">PNG, JPG, WEBP up to 5MB</p>
             <input
               type="file"
               accept="image/*"
@@ -347,23 +341,19 @@ const ItemForm = ({
       </div>
 
       {/* Submit Button */}
-      <div className="pt-4">
+      <div className="pt-2">
         <button
           type="submit"
           disabled={isSubmitting || isUploadingImage}
-          className={`w-full py-3.5 px-6 rounded-xl font-bold text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-lg ${
-            isLost
-              ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20'
-              : 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20'
-          } ${(isSubmitting || isUploadingImage) ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.01]'}`}
+          className="w-full py-3.5 px-6 rounded-full font-bold text-white bg-[#121212] hover:bg-[#334FB4] transition-all duration-200 flex items-center justify-center gap-2 shadow-md uppercase tracking-wider text-xs border border-[#121212] disabled:opacity-50"
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin text-[#53FF73]" />
               <span>Publishing Report...</span>
             </>
           ) : (
-            <span>{initialData ? 'Update Report' : `Submit ${isLost ? 'Lost' : 'Found'} Report`}</span>
+            <span>{initialData ? 'Update Report' : `Publish ${isLost ? 'Lost' : 'Found'} Report`}</span>
           )}
         </button>
       </div>
@@ -372,3 +362,4 @@ const ItemForm = ({
 };
 
 export default ItemForm;
+

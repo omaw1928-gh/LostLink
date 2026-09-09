@@ -48,56 +48,56 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#FFFBE3]">
       <div className="max-w-md w-full space-y-6">
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <Link to="/" className="inline-flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-full bg-[#121212] flex items-center justify-center text-[#53FF73] shadow-md group-hover:scale-105 transition-transform">
+              <Sparkles className="w-5 h-5 fill-current" />
             </div>
-            <span className="font-bold text-2xl tracking-tight text-slate-900">
-              Lost<span className="text-brand-600">Link</span>
+            <span className="font-display font-bold text-2xl tracking-tight text-[#121212]">
+              Lost<span className="text-[#334FB4]">Link</span>
             </span>
           </Link>
-          <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="font-display text-2xl font-bold text-[#121212] tracking-tight">
             Sign In to Campus Portal
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500">
+          <p className="text-xs text-[#121212]/70 font-medium">
             Access your lost reports, claim requests, and campus feed.
           </p>
         </div>
 
         {/* Quick Demo Fill Buttons */}
-        <div className="p-3.5 bg-brand-50/70 border border-brand-200/80 rounded-2xl space-y-2">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-brand-800 text-center">
+        <div className="p-4 bg-[#EFE3FF] border border-[#334FB4]/30 rounded-3xl space-y-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#334FB4] text-center">
             ⚡ 1-Click Demo Credentials
           </p>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => handleQuickDemo('student')}
-              className="px-3 py-2 rounded-xl text-xs font-bold text-slate-800 bg-white border border-brand-200 hover:bg-brand-100/50 shadow-sm transition-all flex items-center justify-center gap-1.5"
+              className="px-3 py-2 rounded-full text-xs font-bold text-[#121212] bg-white border border-[#121212] hover:bg-[#53FF73] transition-all flex items-center justify-center gap-1.5"
             >
-              <UserCheck className="w-3.5 h-3.5 text-brand-600" />
+              <UserCheck className="w-3.5 h-3.5 text-[#334FB4]" />
               Demo Student
             </button>
             <button
               type="button"
               onClick={() => handleQuickDemo('admin')}
-              className="px-3 py-2 rounded-xl text-xs font-bold text-amber-900 bg-amber-50 border border-amber-200 hover:bg-amber-100 shadow-sm transition-all flex items-center justify-center gap-1.5"
+              className="px-3 py-2 rounded-full text-xs font-bold text-[#121212] bg-[#F1FF54] border border-[#121212] hover:bg-[#ebfe2c] transition-all flex items-center justify-center gap-1.5"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#334FB4]" />
               Demo Admin
             </button>
           </div>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl space-y-5">
+        <div className="bg-white p-8 rounded-3xl border-2 border-[#121212] shadow-xl space-y-5">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
                 Campus Email Address
               </label>
               <div className="relative">
@@ -106,16 +106,16 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="student@campus.edu"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 bg-[#FFFBE3] border border-[#121212] rounded-2xl text-xs text-[#121212] font-semibold focus:bg-white focus:ring-2 focus:ring-[#334FB4] outline-none transition-all"
                   required
                 />
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                <Mail className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5" />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#121212]">
                   Password
                 </label>
               </div>
@@ -125,37 +125,37 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 bg-[#FFFBE3] border border-[#121212] rounded-2xl text-xs text-[#121212] font-semibold focus:bg-white focus:ring-2 focus:ring-[#334FB4] outline-none transition-all"
                   required
                 />
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                <Lock className="w-4 h-4 text-[#334FB4] absolute left-3.5 top-3.5" />
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-lg shadow-brand-600/20 transition-all hover:scale-[1.01] flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3.5 px-4 rounded-full font-bold text-white bg-[#121212] hover:bg-[#334FB4] transition-all duration-200 flex items-center justify-center gap-2 uppercase tracking-wider text-xs border border-[#121212] disabled:opacity-50"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-[#53FF73]" />
                   Authenticating...
                 </>
               ) : (
                 <>
                   <span>Sign In</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-[#53FF73]" />
                 </>
               )}
             </button>
           </form>
 
           {/* Bottom link */}
-          <div className="text-center pt-2 border-t border-slate-100">
-            <p className="text-xs text-slate-500">
+          <div className="text-center pt-2 border-t border-[#E5E0D8]">
+            <p className="text-xs text-[#121212]/70 font-medium">
               New to LostLink?{' '}
-              <Link to="/register" className="font-bold text-brand-600 hover:underline">
+              <Link to="/register" className="font-bold text-[#334FB4] hover:underline">
                 Create an account
               </Link>
             </p>
@@ -167,3 +167,4 @@ const Login = () => {
 };
 
 export default Login;
+

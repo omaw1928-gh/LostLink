@@ -3,38 +3,97 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --moxie-cream: #FFFBE3;
+    --moxie-dark: #121212;
+    --moxie-blue: #334FB4;
+    --moxie-lavender: #EFE3FF;
+    --moxie-tag-green: #53FF73;
+    --moxie-tag-yellow: #F1FF54;
+    --moxie-tag-pink: #FFD1DC;
+  }
+
   body {
     font-family: 'Inter', sans-serif;
+    background-color: var(--moxie-cream);
+    color: var(--moxie-dark);
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Poppins', sans-serif;
   }
 }
 
-/* Custom modern scrollbar */
+/* Custom Moxie scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #FFFBE3;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: #BFAED4;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #334FB4;
 }
 
-/* Glassmorphism helpers */
+/* Glassmorphism helpers for Moxie Theme */
 .glass {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 251, 227, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-white {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .glass-dark {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(18, 18, 18, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Moxie Pill Badges */
+.moxie-badge-green {
+  background-color: #53FF73;
+  color: #121212;
+  font-weight: 700;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.moxie-badge-yellow {
+  background-color: #F1FF54;
+  color: #121212;
+  font-weight: 700;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.moxie-badge-pink {
+  background-color: #FFD1DC;
+  color: #121212;
+  font-weight: 700;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.moxie-badge-blue {
+  background-color: #334FB4;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 /* Animation utilities */
@@ -55,3 +114,4 @@
 .animate-pulse-subtle {
   animation: pulseSubtle 3s ease-in-out infinite;
 }
+

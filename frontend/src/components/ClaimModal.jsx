@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Send, AlertCircle, Shield, CheckCircle2, Loader2 } from 'lucide-react';
+import { X, Send, AlertCircle, Shield, Loader2 } from 'lucide-react';
 import { createClaim } from '../services/claimService';
 import { useToast } from '../context/ToastContext';
 
@@ -39,50 +39,50 @@ const ClaimModal = ({ isOpen, onClose, item, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#121212]/60 backdrop-blur-md animate-fade-in">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border-2 border-[#121212]">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+        <div className="flex items-center justify-between p-5 border-b border-[#E5E0D8] bg-[#EFE3FF]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-[#334FB4] text-white flex items-center justify-center">
               <Shield className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-slate-900">
-                {isFound ? 'Claim This Belonging' : 'Contact Reporter'}
+              <h3 className="font-display font-bold text-base text-[#121212]">
+                {isFound ? 'Claim Belonging' : 'Contact Reporter'}
               </h3>
-              <p className="text-xs text-slate-500">Provide proof of ownership or verification details</p>
+              <p className="text-xs text-[#121212]/70 font-medium">Provide proof of ownership or details</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-full text-[#121212] hover:bg-white/80 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-[#FFFBE3]">
           {/* Target Item summary */}
-          <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center gap-3">
+          <div className="p-3.5 bg-white rounded-2xl border border-[#121212] flex items-center gap-3">
             <img
               src={item.image || 'https://images.unsplash.com/photo-1586769852044-692d6e3703f0?w=200'}
               alt={item.title}
-              className="w-12 h-12 rounded-lg object-cover bg-slate-200 shrink-0"
+              className="w-12 h-12 rounded-xl object-cover bg-[#FFFBE3] shrink-0 border border-[#E5E0D8]"
             />
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold uppercase tracking-wider text-brand-600">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#334FB4]">
                 {item.category} • {item.type}
               </p>
-              <h4 className="text-sm font-semibold text-slate-800 truncate">{item.title}</h4>
-              <p className="text-xs text-slate-500 truncate">{item.location}</p>
+              <h4 className="font-display text-sm font-bold text-[#121212] truncate">{item.title}</h4>
+              <p className="text-xs text-[#121212]/60 truncate">{item.location}</p>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              Verification Proof & Details <span className="text-rose-500">*</span>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#121212] mb-1.5">
+              Verification Proof & Details <span className="text-rose-600">*</span>
             </label>
             <textarea
               rows="4"
@@ -93,14 +93,14 @@ const ClaimModal = ({ isOpen, onClose, item, onSuccess }) => {
                   ? 'Describe unique characteristics, passwords, wallpaper, serial tags, or specific contents to verify you are the rightful owner...'
                   : 'Let the person who lost this know where and when you found it, or how you can return it...'
               }
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-800 text-sm leading-relaxed"
+              className="w-full px-4 py-3 rounded-2xl border border-[#121212] bg-white focus:ring-2 focus:ring-[#334FB4] outline-none text-[#121212] text-xs leading-relaxed"
             />
           </div>
 
-          <div className="p-3 bg-amber-50 rounded-xl border border-amber-200/70 text-xs text-amber-800 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-            <p>
-              The reporter will review your claim details. If approved, their contact info and hand-off details will be shared with you.
+          <div className="p-3 bg-[#F1FF54]/40 rounded-2xl border border-[#121212]/20 text-xs text-[#121212] flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-[#334FB4] shrink-0 mt-0.5" />
+            <p className="font-medium">
+              The reporter will review your claim details. If approved, contact info and hand-off details will be shared.
             </p>
           </div>
 
@@ -109,14 +109,14 @@ const ClaimModal = ({ isOpen, onClose, item, onSuccess }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+              className="px-4 py-2 rounded-full text-xs font-bold text-[#121212] hover:bg-white transition-colors border border-[#121212]/30"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-md shadow-brand-600/20 transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-[#121212] hover:bg-[#334FB4] shadow-sm transition-all disabled:opacity-50"
             >
               {submitting ? (
                 <>
@@ -125,7 +125,7 @@ const ClaimModal = ({ isOpen, onClose, item, onSuccess }) => {
                 </>
               ) : (
                 <>
-                  <Send className="w-4 h-4" />
+                  <Send className="w-4 h-4 text-[#53FF73]" />
                   Submit Claim
                 </>
               )}
@@ -138,3 +138,4 @@ const ClaimModal = ({ isOpen, onClose, item, onSuccess }) => {
 };
 
 export default ClaimModal;
+

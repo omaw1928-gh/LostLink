@@ -94,12 +94,12 @@ const MyReports = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-moxie-dark/20">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-extrabold text-moxie-dark tracking-tight">
             My Reported Belongings
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-moxie-dark/70 mt-1">
             Manage your lost and found listings, update statuses, or remove resolved cases.
           </p>
         </div>
@@ -136,10 +136,10 @@ const MyReports = () => {
           <button
             key={tab.key}
             onClick={() => setFilterType(tab.key)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
               filterType === tab.key
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                ? 'bg-moxie-dark text-moxie-cream shadow-sm'
+                : 'bg-moxie-cream text-moxie-dark hover:bg-moxie-cream/90 border border-moxie-dark'
             }`}
           >
             {tab.label}
