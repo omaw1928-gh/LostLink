@@ -1,255 +1,458 @@
-# LostLink – Smart Campus Lost & Found Management System
-
-![LostLink Banner](https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&auto=format&fit=crop&q=80)
+# LostLink — Smart Campus Lost & Found Management System
 
 > **Find it. Report it. Return it.**
-> A modern, full-stack cloud web application that solves the real-world campus problem of losing and finding personal belongings.
+> A full-stack, cloud-deployed web application that solves the real-world campus problem of lost and found belongings.
+
+🌐 **Live Application:** [https://lost-link-ten.vercel.app/](https://lost-link-ten.vercel.app/)
+🔗 **Backend API:** [https://lostlink-6ree.onrender.com/api/health](https://lostlink-6ree.onrender.com/api/health)
 
 ---
 
 ## 📌 Problem Statement
 
-Every semester, thousands of college students lose valuable items across university campuses—including laptops, dorm keys, student ID cards, headphones, and wallets. Traditional physical lost & found desks suffer from fragmented logs, lack of photo proof, delayed notifications, and zero privacy protection.
+Every semester, thousands of college students lose valuable items across university campuses — laptops, dorm keys, student ID cards, headphones, and wallets. Traditional physical lost & found desks suffer from:
+- Fragmented, paper-based logs
+- No photo evidence or visual verification
+- No structured claim or verification workflow
+- No privacy protection between reporter and claimant
 
-## 💡 The LostLink Solution
+**LostLink** modernizes campus asset recovery through a structured, cloud-hosted platform with full CRUD operations, image uploads, verified ownership claims, and an admin moderation console — all deployed across three cloud services.
 
-**LostLink** modernizes campus asset recovery with an intuitive, cloud-hosted platform:
-1. **Instant Reporting**: Students can report lost or found belongings with campus location tags, high-resolution photo uploads, and timestamps in under 60 seconds.
-2. **Interactive Marketplace Feed**: Full-text search and smart filtering by category, location, status, and report type.
-3. **Verified Claims Workflow**: Students submit proof of ownership to item finders/reporters. Upon approval, contact details are securely shared to coordinate a safe hand-off.
-4. **Administrative Console**: Campus security and administration staff can monitor activity, review analytics, moderate duplicate/inappropriate listings, and manage user accounts.
+---
+
+## 🏗️ System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    CLIENT BROWSER                           │
+│                React.js SPA on Vercel                       │
+│         https://lost-link-ten.vercel.app                    │
+└──────────────────────┬──────────────────────────────────────┘
+                       │  HTTPS Requests (Axios + JWT Bearer)
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│               BACKEND REST API — Render                      │
+│         https://lostlink-6ree.onrender.com                  │
+│                                                             │
+│  Node.js + Express.js   │  MVC Architecture                 │
+│  JWT Authentication     │  express-rate-limit               │
+│  Helmet Security        │  CORS Origin Control              │
+└──────────┬──────────────────────────┬───────────────────────┘
+           │                          │
+           ▼                          ▼
+┌──────────────────────┐   ┌─────────────────────────────┐
+│   MongoDB Atlas      │   │      Cloudinary CDN          │
+│   (Cloud Database)   │   │   (Image Storage & Delivery) │
+│                      │   │                              │
+│  Collections:        │   │  Folder: lostlink/           │
+│  • users             │   │  • lostlink/lost/            │
+│  • items             │   │  • lostlink/found/           │
+│  • claims            │   │  • lostlink/items/           │
+│                      │   │  • lostlink/profiles/        │
+│  Cluster: Atlas M0   │   │  Auto-transforms to 1200×1200│
+└──────────────────────┘   └─────────────────────────────┘
+```
+
+---
+
+## ☁️ Cloud Services Used
+
+| Service | Provider | Purpose |
+| :--- | :--- | :--- |
+| **Frontend Hosting** | Vercel | Deploys the React/Vite SPA with automatic CI/CD on every push to `main` |
+| **Backend Hosting** | Render | Hosts the Node.js/Express REST API server with auto-deploys from GitHub |
+| **Cloud Database** | MongoDB Atlas | Manages all structured data (users, items, claims) via Mongoose ODM |
+| **Image Storage & CDN** | Cloudinary | Stores item and profile images; delivers them via global CDN with auto-optimization |
+| **Source Control** | GitHub | Triggers CI/CD pipelines to both Vercel and Render on every commit |
 
 ---
 
 ## 🛠️ Technology Stack
 
 ### Frontend
-- **Framework**: React.js 18 with Vite
-- **Routing**: React Router DOM v6
-- **Styling**: Tailwind CSS (Custom emerald & navy theme)
-- **Icons**: Lucide React
-- **HTTP Client**: Axios (with JWT interceptors)
+- **Framework:** React.js 18 with Vite (SPA)
+- **Routing:** React Router DOM v6
+- **Styling:** Tailwind CSS with custom design system
+- **Icons:** Lucide React
+- **HTTP Client:** Axios with JWT Bearer Token interceptors
+- **State Management:** React Context API (Auth + Toast)
 
 ### Backend
-- **Runtime**: Node.js & Express.js
-- **Architecture**: RESTful API with MVC pattern
-- **Authentication**: JSON Web Tokens (JWT) & bcryptjs password hashing
-- **Security**: Helmet, CORS origin control, express-rate-limit
+- **Runtime:** Node.js (v18+)
+- **Framework:** Express.js with MVC architecture
+- **Authentication:** JSON Web Tokens (JWT) + bcryptjs password hashing
+- **File Upload:** Multer (multipart/form-data → buffer → Cloudinary)
+- **Security:** Helmet, CORS, express-rate-limit, trust proxy
+- **DNS:** Overridden to use Google DNS (8.8.8.8) for reliable MongoDB Atlas SRV resolution
 
-### Database & Cloud
-- **Database**: MongoDB Atlas via Mongoose ODM
-- **Media Storage**: Cloudinary SDK (Image streaming & CDN delivery with local Data-URI fallback)
-- **Deployment Readiness**: Vercel (Frontend) + Render (Backend)
+### Database
+- **Database:** MongoDB Atlas (Cluster M0 free tier)
+- **ODM:** Mongoose with schema validation, compound indexing, and text search
+- **Collections:** `users`, `items`, `claims`
+
+### Media
+- **Image Upload:** Cloudinary SDK v2
+- **Pattern:** FileReader → Base64 preview (instant) → Background upload to Cloudinary CDN → Secure URL stored in MongoDB
+- **Fallback:** If Cloudinary is unavailable, Base64 Data URI is stored directly
 
 ---
 
 ## 📁 Repository Structure
 
-```text
-lostlink/
+```
+LostLink/
+├── backend/
+│   ├── config/
+│   │   ├── db.js                    # MongoDB Atlas connection with DNS override
+│   │   └── cloudinary.js            # Cloudinary config + uploadToCloudinary() helper
+│   ├── controllers/
+│   │   ├── authController.js        # Register, Login, GetMe, UpdateProfile
+│   │   ├── itemController.js        # CRUD for lost/found items + auto Cloudinary upload
+│   │   ├── claimController.js       # Submit, list, approve/reject claims
+│   │   ├── adminController.js       # Admin stats, user/item management
+│   │   └── uploadController.js      # Standalone image upload endpoint
+│   ├── middleware/
+│   │   ├── authMiddleware.js        # JWT protect() + adminOnly() guards
+│   │   ├── uploadMiddleware.js      # Multer in-memory buffer configuration
+│   │   └── errorMiddleware.js       # Centralized error handler (CastError, E11000, ValidationError)
+│   ├── models/
+│   │   ├── User.js                  # Schema: name, email, password, phone, department, year, role, profileImage
+│   │   ├── Item.js                  # Schema: title, description, type, category, location, date, time, image, status, reportedBy
+│   │   └── Claim.js                 # Schema: item (ref), claimant (ref), message, status
+│   ├── routes/
+│   │   ├── authRoutes.js            # /api/auth/*
+│   │   ├── itemRoutes.js            # /api/items/*
+│   │   ├── claimRoutes.js           # /api/claims/*
+│   │   ├── adminRoutes.js           # /api/admin/*
+│   │   ├── uploadRoutes.js          # /api/upload
+│   │   └── debugRoutes.js           # /api/debug/cloudinary-status
+│   ├── utils/
+│   │   └── seed.js                  # Database seeder with demo users, items, claims
+│   ├── server.js                    # Express app, middleware chain, route mounting
+│   └── package.json
+│
 ├── frontend/
 │   ├── src/
-│   │   ├── components/       # ItemCard, ItemForm, ClaimModal, ConfirmModal, StatCard, Navbar...
-│   │   ├── pages/            # Home, Browse, ItemDetails, Login, Register, Dashboard, Admin...
-│   │   ├── layouts/          # MainLayout, DashboardLayout
-│   │   ├── services/         # Axios API clients for Auth, Items, Claims, Admin, Upload
-│   │   ├── context/          # AuthContext (JWT state), ToastContext (Alerts)
-│   │   ├── App.jsx           # Master route configuration
-│   │   ├── main.jsx          # Entry point with context providers
-│   │   └── index.css         # Tailwind & custom glassmorphism styles
-│   ├── public/               # Favicon & assets
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── tailwind.config.js
-│   └── .env.example
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx           # Top navigation with auth state
+│   │   │   ├── ItemCard.jsx         # Browse feed item card
+│   │   │   ├── ItemForm.jsx         # Create/edit report form with image upload
+│   │   │   ├── ClaimModal.jsx       # Claim submission modal
+│   │   │   ├── ConfirmModal.jsx     # Danger action confirmation dialog
+│   │   │   ├── LoadingSpinner.jsx   # Loading state component
+│   │   │   └── StatCard.jsx         # Admin dashboard metric card
+│   │   ├── pages/
+│   │   │   ├── Home.jsx             # Landing page with hero and features
+│   │   │   ├── Browse.jsx           # Searchable/filterable item marketplace
+│   │   │   ├── ItemDetails.jsx      # Full item view with claim workflow
+│   │   │   ├── Dashboard.jsx        # Student's personal hub
+│   │   │   ├── MyReports.jsx        # Student's submitted item reports
+│   │   │   ├── MyClaims.jsx         # Student's submitted claims
+│   │   │   ├── Profile.jsx          # Edit profile & avatar upload
+│   │   │   ├── ReportItem.jsx       # Report lost/found item form page
+│   │   │   ├── Login.jsx            # Login with demo credential buttons
+│   │   │   ├── Register.jsx         # Multi-field registration form
+│   │   │   ├── AdminDashboard.jsx   # Admin analytics & stats
+│   │   │   ├── AdminItems.jsx       # Admin: Manage all items
+│   │   │   ├── AdminUsers.jsx       # Admin: Manage all users
+│   │   │   └── AdminClaims.jsx      # Admin: Review all claims
+│   │   ├── services/
+│   │   │   ├── api.js               # Axios base instance (env-aware URL + JWT interceptor)
+│   │   │   ├── authService.js       # Auth API calls
+│   │   │   ├── itemService.js       # Item CRUD API calls
+│   │   │   ├── claimService.js      # Claims API calls
+│   │   │   ├── adminService.js      # Admin API calls
+│   │   │   └── uploadService.js     # Image upload API call
+│   │   ├── context/
+│   │   │   ├── AuthContext.jsx      # JWT + user state provider
+│   │   │   └── ToastContext.jsx     # Global notification system
+│   │   ├── layouts/
+│   │   │   ├── MainLayout.jsx       # Public layout with Navbar
+│   │   │   └── DashboardLayout.jsx  # Authenticated layout with sidebar
+│   │   ├── App.jsx                  # Router config with protected routes
+│   │   └── index.css                # Tailwind + custom CSS
+│   ├── public/
+│   ├── vercel.json                  # Vercel SPA rewrites + API proxy config
+│   ├── vite.config.js               # Vite dev proxy to localhost:5000
+│   └── package.json
 │
-├── backend/
-│   ├── config/               # db.js (MongoDB Atlas), cloudinary.js
-│   ├── controllers/          # authController, itemController, claimController, adminController, uploadController
-│   ├── middleware/           # authMiddleware (JWT + Admin role), uploadMiddleware (Multer), errorMiddleware
-│   ├── models/               # User.js, Item.js, Claim.js
-│   ├── routes/               # authRoutes, itemRoutes, claimRoutes, adminRoutes, uploadRoutes
-│   ├── utils/                # seed.js (Pre-populated sample data)
-│   ├── server.js             # Express app setup & route mounting
-│   ├── package.json
-│   └── .env.example
-│
-├── docs/
-│   ├── API_DOCUMENTATION.md  # Complete REST API reference
-│   ├── DATABASE_DESIGN.md    # Schemas, ERD diagram & index strategies
-│   └── CLOUD_ARCHITECTURE.md # Cloud hosting & security documentation
-│
+├── vercel.json                      # Root Vercel rewrite rules
 ├── README.md
 └── .gitignore
 ```
 
 ---
 
-## 🚀 Getting Started Locally
+## 🗄️ Database Design
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm (v9 or higher)
-- MongoDB installed locally OR a MongoDB Atlas cluster URI
+### Collections in MongoDB Atlas
 
----
+#### `users` Collection
+```json
+{
+  "_id": "ObjectId",
+  "name": "String (required, max 60)",
+  "email": "String (unique, lowercase)",
+  "password": "String (bcrypt hashed, select: false)",
+  "phone": "String",
+  "department": "String",
+  "year": "String",
+  "role": "String (enum: student | admin)",
+  "profileImage": "String (Cloudinary URL)",
+  "createdAt": "Date",
+  "updatedAt": "Date"
+}
+```
 
-### Step 1: Clone the Repository
-```bash
-git clone https://github.com/your-username/lostlink.git
-cd lostlink
+#### `items` Collection
+```json
+{
+  "_id": "ObjectId",
+  "title": "String (required, max 100)",
+  "description": "String (required, max 1000)",
+  "type": "String (enum: lost | found)",
+  "category": "String (enum: Electronics | ID Card | Wallet | Keys | Books | Clothing | Accessories | Documents | Other)",
+  "location": "String (required, max 120)",
+  "date": "String",
+  "time": "String",
+  "image": "String (Cloudinary CDN URL)",
+  "status": "String (enum: active | claimed | resolved)",
+  "reportedBy": "ObjectId → users",
+  "createdAt": "Date",
+  "updatedAt": "Date"
+}
+```
+
+#### `claims` Collection
+```json
+{
+  "_id": "ObjectId",
+  "item": "ObjectId → items",
+  "claimant": "ObjectId → users",
+  "message": "String (required, max 1000 — ownership proof)",
+  "status": "String (enum: pending | approved | rejected)",
+  "createdAt": "Date",
+  "updatedAt": "Date"
+}
+```
+
+### Indexes
+- `items`: Text index on `title + description + location` (full-text search), compound index on `type + status + category`, index on `reportedBy`
+- `claims`: Compound index on `item + claimant`, index on `claimant`
+
+### Entity Relationships
+```
+users ──< items (one-to-many, reportedBy)
+users ──< claims (one-to-many, claimant)
+items ──< claims (one-to-many, item)
 ```
 
 ---
 
-### Step 2: Backend Setup
-```bash
-cd backend
-npm install
+## 📡 REST API Reference
+
+### Authentication — `/api/auth`
+
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Public | Register a new student/admin account |
+| `POST` | `/api/auth/login` | Public | Login and receive JWT token |
+| `GET` | `/api/auth/me` | 🔒 JWT | Get currently authenticated user profile |
+| `PUT` | `/api/auth/profile` | 🔒 JWT | Update name, phone, department, year, avatar |
+
+### Items — `/api/items`
+
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/items` | Public | List items with search, filter, sort & pagination |
+| `GET` | `/api/items/:id` | Public | Get full details of one item |
+| `POST` | `/api/items` | 🔒 JWT | Create a new lost or found item report |
+| `PUT` | `/api/items/:id` | 🔒 JWT (owner) | Edit an existing item report |
+| `DELETE` | `/api/items/:id` | 🔒 JWT (owner/admin) | Delete an item report |
+| `PATCH` | `/api/items/:id/status` | 🔒 JWT (owner) | Update status: `active → claimed → resolved` |
+
+**Query Parameters for `GET /api/items`:**
+```
+?type=lost|found
+?category=Electronics|Keys|...
+?status=active|claimed|resolved
+?search=keyword
+?sortBy=createdAt&sortOrder=desc
+?page=1&limit=12
 ```
 
-Create `backend/.env` (or copy from `.env.example`):
-```env
-PORT=5000
-NODE_ENV=development
-MONGODB_URI=mongodb://127.0.0.1:27017/lostlink
-JWT_SECRET=lostlink_super_secret_jwt_key_campus_2025_secure_token
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-CLIENT_URL=http://localhost:5173
+### Claims — `/api/claims`
+
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/claims` | 🔒 JWT | Submit an ownership claim on an item |
+| `GET` | `/api/claims/my` | 🔒 JWT | Get all claims submitted by current user |
+| `PUT` | `/api/claims/:id` | 🔒 JWT (reporter) | Approve or reject a claim |
+
+### Image Upload — `/api/upload`
+
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/upload` | 🔒 JWT | Upload image → Cloudinary; returns CDN URL |
+
+**Multipart form-data:** field name `image`, optional `folder` or `type` body field for Cloudinary subfolder routing.
+
+### Admin — `/api/admin`
+
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/admin/stats` | 🔒 Admin | Total users, items, claims, resolution rate |
+| `GET` | `/api/admin/users` | 🔒 Admin | List all registered users |
+| `DELETE` | `/api/admin/users/:id` | 🔒 Admin | Delete a user account |
+| `GET` | `/api/admin/items` | 🔒 Admin | List all items across the platform |
+| `DELETE` | `/api/admin/items/:id` | 🔒 Admin | Delete any item report |
+| `GET` | `/api/admin/claims` | 🔒 Admin | List all claims |
+
+### Health & Debug
+
+| Method | Endpoint | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/` | Public | Server welcome + endpoint directory |
+| `GET` | `/api` | Public | API endpoint index |
+| `GET` | `/api/health` | Public | Server health check (status + timestamp) |
+| `GET` | `/api/debug/cloudinary-status` | Public | Verify Cloudinary API connectivity |
+
+---
+
+## 🔄 Core Workflows
+
+### Image Upload Flow (Cloudinary)
+```
+User selects image file
+        ↓
+FileReader.readAsDataURL() — instant base64 preview in UI
+        ↓
+POST /api/upload (multipart file → Multer buffer)
+        ↓
+Buffer → Base64 Data URI → cloudinary.uploader.upload()
+        ↓
+Cloudinary processes, resizes (max 1200×1200), optimizes
+        ↓
+Secure CDN URL returned → stored in MongoDB items.image
 ```
 
-*(Note: If Cloudinary credentials are not set, LostLink automatically falls back to local Data-URI uploads for instant development).*
-
-#### (Optional) Seed Sample Database Data
-Populate realistic campus users, lost/found items, and sample claims:
-```bash
-npm run seed
+### Claims Verification Workflow
+```
+User A reports found item → POST /api/items (status: active)
+        ↓
+User B (lost owner) browses → finds item in feed
+        ↓
+User B submits claim with proof → POST /api/claims
+        ↓
+User A (reporter) reviews claim in Dashboard
+        ↓
+User A approves → PUT /api/claims/:id { status: "approved" }
+        ↓
+Item status updates to "claimed" → Contact details shared
+        ↓
+Physical item returned → User A marks → status: "resolved"
 ```
 
-#### Start Backend Server
-```bash
-npm run dev
-# Server running at http://localhost:5000
+### Authentication Flow (JWT)
+```
+POST /api/auth/register or /api/auth/login
+        ↓
+Server validates credentials → signs JWT (30 day expiry)
+        ↓
+Token stored in localStorage (lostlink_token)
+        ↓
+All subsequent requests include Authorization: Bearer <token>
+        ↓
+authMiddleware.js verifies token → attaches user to req.user
+        ↓
+On 401 response → localStorage cleared → redirect to /login
 ```
 
 ---
 
-### Step 3: Frontend Setup
-In a new terminal window:
-```bash
-cd frontend
-npm install
-```
+## 🚀 Deployment — How It Is Deployed
 
-Create `frontend/.env`:
-```env
-VITE_API_URL=/api
-```
+### Frontend → Vercel
+- The React/Vite frontend is deployed on **Vercel** with automatic CI/CD.
+- Every push to the `main` branch on GitHub triggers an automatic build and deploy.
+- **Build command:** `npm run build` (Vite compiles to `dist/`)
+- **Output directory:** `frontend/dist`
+- **Environment variable set in Vercel dashboard:**
+  ```
+  VITE_API_URL = https://lostlink-6ree.onrender.com/api
+  ```
+- `frontend/vercel.json` handles SPA routing (all routes → `index.html`) and API proxy.
 
-#### Start Frontend Development Server
-```bash
-npm run dev
-# Application running at http://localhost:5173
-```
+### Backend → Render
+- The Node.js/Express server is deployed on **Render** as a Web Service.
+- Auto-deploys on every push to `main` from GitHub.
+- **Start command:** `node server.js`
+- **Environment variables set in Render dashboard:**
+  ```
+  NODE_ENV = production
+  PORT = 10000
+  MONGODB_URI = mongodb+srv://...@cluster0.zaz1fdw.mongodb.net/...
+  JWT_SECRET = <secret>
+  CLOUDINARY_URL = cloudinary://<api_key>:<api_secret>@v6e9uxyo
+  CLIENT_URL = https://lost-link-ten.vercel.app
+  ```
+- Render free tier: server spins down after 15 min of inactivity (first request may be slow).
+
+### Database → MongoDB Atlas
+- A free-tier **M0 cluster** is provisioned on MongoDB Atlas.
+- IP whitelist is set to `0.0.0.0/0` to allow connections from Render (dynamic IP).
+- The backend overrides Node.js DNS to use `8.8.8.8` (Google DNS) to reliably resolve MongoDB Atlas SRV records on all hosting platforms.
+- Connection string is injected via `MONGODB_URI` environment variable — never committed to source code.
+
+### Images → Cloudinary
+- Cloudinary account with cloud name `v6e9uxyo`.
+- Images are uploaded to the `lostlink/` folder, organized by subfolder (`lost/`, `found/`, `items/`, `profiles/`).
+- All uploaded images are auto-transformed: max `1200×1200`, quality `auto`.
+- Delivered via Cloudinary's global CDN using `res.cloudinary.com` secure URLs.
 
 ---
 
 ## 🔑 Demo Login Credentials
 
-The seed script (`npm run seed`) creates the following pre-configured accounts:
-
-| Role | Email | Password | Access Privileges |
+| Role | Email | Password | Access |
 | :--- | :--- | :--- | :--- |
-| **Campus Admin** | `admin@campus.edu` | `AdminPassword123!` | Full System Analytics, User Management, Global Item Moderation |
-| **Student 1** | `alex.rivera@campus.edu` | `StudentPassword123!` | Create Reports, Submit Claims, Student Workspace |
-| **Student 2** | `sarah.chen@campus.edu` | `StudentPassword123!` | Create Reports, Submit Claims, Student Workspace |
-| **Student 3** | `michael.davis@campus.edu`| `StudentPassword123!` | Create Reports, Submit Claims, Student Workspace |
-
-*(Tip: The Login page includes **1-Click Demo Buttons** to automatically autofill Student and Admin credentials).*
+| **Admin** | `admin@campus.edu` | `AdminPassword123!` | Full admin console, analytics, user management |
+| **Student** | `alex.rivera@campus.edu` | `StudentPassword123!` | Create reports, submit and manage claims |
 
 ---
 
-## 🔄 Claims & Verification Workflow
+## ✅ CRUD Operations Demonstrated
 
-```text
-Student reports Found Item (e.g. Sony Headphones)
-                  ↓
-Student who lost the item browses marketplace
-                  ↓
-Submits Claim with Verification Proof (e.g. Bluetooth ID / Serial)
-                  ↓
-Item Reporter receives notification on Dashboard & My Claims
-                  ↓
-Reporter reviews details → [ Approve / Reject ]
-                  ↓
-[Approve] → Item status transitions to 'Claimed' / 'Resolved'
-          → Contact details shared for hand-off
-```
-
----
-
-## 📡 REST API Summary
-
-| Method | Route | Access | Purpose |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | Public | Register new user |
-| `POST` | `/api/auth/login` | Public | Authenticate user & get JWT |
-| `GET` | `/api/auth/me` | Private | Current user profile |
-| `GET` | `/api/items` | Public | Filterable list of campus items |
-| `GET` | `/api/items/:id` | Public | Detailed view of an item |
-| `POST` | `/api/items` | Private | Report lost or found item |
-| `PUT` | `/api/items/:id` | Private | Edit own item report |
-| `DELETE` | `/api/items/:id` | Private | Delete item report |
-| `PATCH`| `/api/items/:id/status` | Private | Update status (`active`/`claimed`/`resolved`)|
-| `POST` | `/api/claims` | Private | Submit ownership claim |
-| `GET` | `/api/claims/my` | Private | Current user's claims |
-| `PUT` | `/api/claims/:id` | Private | Approve/reject claim |
-| `GET` | `/api/admin/stats` | Admin | Dashboard analytics & counts |
-| `GET` | `/api/admin/users` | Admin | Manage all campus users |
-| `GET` | `/api/admin/items` | Admin | Moderate all campus items |
-| `POST` | `/api/upload` | Private | Upload image to Cloudinary |
-
-*Full documentation with request and response payloads can be found in [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md).*
+| Operation | Entity | Endpoint |
+| :--- | :--- | :--- |
+| **Create** | User (Register) | `POST /api/auth/register` |
+| **Read** | User Profile | `GET /api/auth/me` |
+| **Update** | User Profile | `PUT /api/auth/profile` |
+| — | — | — |
+| **Create** | Item Report | `POST /api/items` |
+| **Read** | Item List + Detail | `GET /api/items`, `GET /api/items/:id` |
+| **Update** | Item Report + Status | `PUT /api/items/:id`, `PATCH /api/items/:id/status` |
+| **Delete** | Item Report | `DELETE /api/items/:id` |
+| — | — | — |
+| **Create** | Claim | `POST /api/claims` |
+| **Read** | My Claims | `GET /api/claims/my` |
+| **Update** | Claim Status (approve/reject) | `PUT /api/claims/:id` |
+| — | — | — |
+| **Create** | Upload Image | `POST /api/upload` |
 
 ---
 
-## 🧪 Testing Checklist
+## 🔒 Security Implementation
 
-- [x] **Registration**: Register a new student account with department and phone.
-- [x] **Authentication**: Login with valid and invalid credentials; verify JWT storage and route guards.
-- [x] **Report Lost Item**: Submit a lost report with category, location, date, description, and image.
-- [x] **Report Found Item**: Submit a found item report.
-- [x] **Search & Filter**: Search items by keyword ("MacBook", "Library") and filter by category and status.
-- [x] **Item Detail View**: Open item page; verify status badge, location details, and reporter card.
-- [x] **Submit Claim**: Submit ownership verification message on another student's item.
-- [x] **Approve / Reject Claim**: Reporter logs in, views claim in Dashboard, and approves it.
-- [x] **Status Update**: Verify item status updates to `claimed` or `resolved`.
-- [x] **Admin Role Guard**: Access `/admin` as student (denied) and as admin (granted).
-- [x] **Admin Moderation**: Search users, delete inappropriate items, and review system stats.
-
----
-
-## 🌐 Production Cloud Deployment
-
-### 1. Backend (Render)
-- Build Command: `npm install`
-- Start Command: `npm start`
-- Environment Variables: `PORT`, `MONGODB_URI`, `JWT_SECRET`, `CLOUDINARY_*`, `CLIENT_URL`
-
-### 2. Frontend (Vercel)
-- Framework Preset: `Vite`
-- Build Command: `npm run build`
-- Output Directory: `dist`
-- Environment Variable: `VITE_API_URL`
-
-### 3. Database (MongoDB Atlas)
-- Provision M0 free cluster.
-- Whitelist IP `0.0.0.0/0`.
-- Connect via Mongoose URI in backend environment variables.
+- **JWT Authentication:** All private routes protected by `protect()` middleware; tokens signed with a secret key and expire in 30 days.
+- **Password Hashing:** bcryptjs with salt rounds (10) — passwords never stored in plaintext.
+- **Role-Based Access:** `adminOnly()` middleware guards all `/api/admin/*` routes.
+- **Rate Limiting:** `express-rate-limit` on `/api/auth/*` — 300 max attempts per 15 minutes.
+- **Helmet:** Security HTTP headers including XSS protection, content type sniffing prevention.
+- **CORS:** Configured to only allow requests from the deployed Vercel frontend and localhost origins.
+- **Environment Variables:** All secrets (`JWT_SECRET`, `MONGODB_URI`, `CLOUDINARY_*`) stored in platform environment dashboards — never committed to Git.
 
 ---
 
 ## 📄 License
-This project is licensed under the MIT License. Built for university campus communities.
+MIT License — Built for university campus communities.
