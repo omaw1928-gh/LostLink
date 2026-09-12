@@ -95,6 +95,34 @@ const authLimiter = rateLimit({
 });
 
 
+// Root Welcome & Status Endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: 'LostLink Campus API Server',
+    status: 'Running & Operational',
+    version: '1.0.0',
+    documentation: {
+      health: '/api/health',
+      auth: '/api/auth',
+      items: '/api/items',
+      claims: '/api/claims',
+      upload: '/api/upload',
+    },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// API Directory Endpoint
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: 'LostLink Campus API',
+    endpoints: ['/api/health', '/api/auth', '/api/items', '/api/claims', '/api/upload', '/api/debug'],
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Root API Health & Info Endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -104,6 +132,7 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
 
 // Mount Routes
 app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
