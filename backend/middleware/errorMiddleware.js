@@ -16,11 +16,11 @@ const errorHandler = (err, req, res, next) => {
     message = `Resource not found with invalid ID of ${err.value}`;
   }
 
-  // Handle Mongoose duplicate key error
+  // Handle Mongoose duplicate key error (code 11000)
   if (err.code === 11000) {
     statusCode = 400;
-    const field = Object.keys(err.keyValue)[0];
-    message = `A record with that ${field} already exists`;
+    const field = err.keyValue ? Object.keys(err.keyValue)[0] : 'email';
+    message = `An account with this ${field} already exists. Please sign in instead.`;
   }
 
   // Handle Mongoose validation error
@@ -45,5 +45,6 @@ const errorHandler = (err, req, res, next) => {
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 };
+
 
 module.exports = { notFound, errorHandler };

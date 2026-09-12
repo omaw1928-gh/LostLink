@@ -3,6 +3,14 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const dns = require('dns');
+
+// Configure DNS resolvers for MongoDB Atlas SRV lookup
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+  dns.setDefaultResultOrder('ipv4first');
+} catch (e) {}
+
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 const { configureCloudinary } = require('./config/cloudinary');
@@ -10,6 +18,7 @@ const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 // Load environment variables
 dotenv.config();
+
 
 // Connect to MongoDB
 connectDB();
