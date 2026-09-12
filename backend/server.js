@@ -19,6 +19,9 @@ configureCloudinary();
 
 const app = express();
 
+// Trust reverse proxies (Render, Vercel, Railway, Heroku, Nginx)
+app.set('trust proxy', 1);
+
 // Security HTTP Headers
 app.use(
   helmet({
@@ -38,11 +41,12 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
       if (
         allowedOrigins.indexOf(origin) !== -1 ||
         origin.endsWith('.vercel.app') ||
+        origin.endsWith('.onrender.com') ||
+        origin.endsWith('.netlify.app') ||
         process.env.NODE_ENV !== 'production'
       ) {
         return callback(null, true);
@@ -50,8 +54,13 @@ app.use(
       return callback(null, true); // Permissive fallback
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   })
 );
+
+// Handle preflight requests
+app.options('*', cors());
 
 // Body parser
 app.use(express.json({ limit: '10mb' }));
@@ -62,10 +71,12 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Rate Limiting for auth routes
+// Rate Limiting for auth routes (safe for deployment behind proxies)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // max 100 requests per window
+  max: 300, // generous limit
+  skipSuccessfulRequests: true, // only count failed attempts
+  validate: { trustProxy: false },
   message: {
     success: false,
     message: 'Too many authentication attempts from this IP, please try again after 15 minutes',
@@ -73,6 +84,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
 
 // Root API Health & Info Endpoint
 app.get('/api/health', (req, res) => {

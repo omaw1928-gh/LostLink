@@ -19,15 +19,26 @@ const register = async (req, res, next) => {
   try {
     const { name, email, password, phone, department, year, role } = req.body;
 
-    if (!name || !email || !password) {
+    const cleanName = (name || '').trim();
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPassword = (password || '');
+
+    if (!cleanName || !cleanEmail || !cleanPassword) {
       return res.status(400).json({
         success: false,
         message: 'Please provide name, email, and password',
       });
     }
 
+    if (cleanPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long',
+      });
+    }
+
     // Check if user already exists
-    const userExists = await User.findOne({ email: email.toLowerCase() });
+    const userExists = await User.findOne({ email: cleanEmail });
     if (userExists) {
       return res.status(400).json({
         success: false,
@@ -39,10 +50,10 @@ const register = async (req, res, next) => {
     const assignedRole = role === 'admin' ? 'admin' : 'student';
 
     const user = await User.create({
-      name,
-      email: email.toLowerCase(),
-      password,
-      phone: phone || '',
+      name: cleanName,
+      email: cleanEmail,
+      password: cleanPassword,
+      phone: phone ? phone.trim() : '',
       department: department || 'Computer Science',
       year: year || '1st Year',
       role: assignedRole,
@@ -78,7 +89,10 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPassword = (password || '');
+
+    if (!cleanEmail || !cleanPassword) {
       return res.status(400).json({
         success: false,
         message: 'Please provide email and password',
@@ -86,7 +100,7 @@ const login = async (req, res, next) => {
     }
 
     // Find user and include password field for verification
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    const user = await User.findOne({ email: cleanEmail }).select('+password');
 
     if (!user) {
       return res.status(401).json({
@@ -95,7 +109,7 @@ const login = async (req, res, next) => {
       });
     }
 
-    const isMatch = await user.matchPassword(password);
+    const isMatch = await user.matchPassword(cleanPassword);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
