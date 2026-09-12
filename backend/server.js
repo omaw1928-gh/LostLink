@@ -88,7 +88,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
 app.use('/api/items', require('./routes/itemRoutes'));
 app.use('/api/claims', require('./routes/claimRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes')); // debug routes
+app.use('/api/debug', require('./routes/debugRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 
 // 404 & Central Error Handling

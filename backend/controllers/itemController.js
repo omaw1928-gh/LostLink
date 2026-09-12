@@ -1,5 +1,6 @@
 const Item = require('../models/Item');
 const Claim = require('../models/Claim');
+const { uploadToCloudinary } = require('../config/cloudinary');
 
 // @desc    Get all items with search, filter, sort, pagination
 // @route   GET /api/items
@@ -135,6 +136,12 @@ const createItem = async (req, res, next) => {
       });
     }
 
+    // Auto-upload base64 image to Cloudinary (Pixel-Heist architecture)
+    let finalImageUrl = image || '';
+    if (finalImageUrl && (finalImageUrl.startsWith('data:image') || Buffer.isBuffer(finalImageUrl))) {
+      finalImageUrl = await uploadToCloudinary(finalImageUrl, `lostlink/${type.toLowerCase()}`);
+    }
+
     const item = await Item.create({
       title,
       description,
@@ -143,7 +150,7 @@ const createItem = async (req, res, next) => {
       location,
       date,
       time: time || '',
-      image: image || '',
+      image: finalImageUrl,
       reportedBy: req.user._id,
       status: 'active',
     });
@@ -162,6 +169,7 @@ const createItem = async (req, res, next) => {
     next(error);
   }
 };
+
 
 // @desc    Update an existing item report
 // @route   PUT /api/items/:id
@@ -199,6 +207,13 @@ const updateItem = async (req, res, next) => {
       'status',
       'type',
     ];
+
+    if (req.body.image && req.body.image.startsWith('data:image')) {
+      req.body.image = await uploadToCloudinary(
+        req.body.image,
+        `lostlink/${(req.body.type || item.type).toLowerCase()}`
+      );
+    }
 
     allowedUpdates.forEach((field) => {
       if (req.body[field] !== undefined) {

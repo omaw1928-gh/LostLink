@@ -1,93 +1,48 @@
-const { cloudinary } = require('../config/cloudinary');
-const { Readable } = require('stream');
+const { uploadToCloudinary } = require('../config/cloudinary');
 
 // @desc    Upload image to Cloudinary (or fallback to Data URI)
 // @route   POST /api/upload
 // @access  Private
 const uploadImage = async (req, res, next) => {
   try {
-    if (!req.file) {
+    let imageSource = null;
+
+    if (req.file) {
+      imageSource = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    } else if (req.body && req.body.image) {
+      imageSource = req.body.image;
+    }
+
+    if (!imageSource) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide an image file to upload',
+        message: 'Please provide an image file or base64 image string to upload',
       });
     }
 
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    const apiKey = process.env.CLOUDINARY_API_KEY;
-    const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-    // Determine target subfolder in Cloudinary: lostlink/lost, lostlink/found, lostlink/profiles, etc.
+    // Determine target subfolder in Cloudinary: lostlink/lost, lostlink/found, lostlink/items, etc.
     const subfolder = (req.body.folder || req.body.type || 'items').toString().toLowerCase().trim();
     const cloudinaryFolder = `lostlink/${subfolder}`;
 
-    // Check if Cloudinary is configured with valid credentials
-    if (cloudName && apiKey && apiSecret) {
-      const uploadFromBuffer = (buffer) => {
-        return new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            {
-              folder: cloudinaryFolder,
-              transformation: [{ width: 1000, height: 1000, crop: 'limit', quality: 'auto' }],
-            },
-            (error, result) => {
-              if (result) {
-                resolve(result);
-              } else {
-                reject(error);
-              }
-            }
-          );
-          Readable.from(buffer).pipe(stream);
-        });
-      };
+    const uploadedUrl = await uploadToCloudinary(imageSource, cloudinaryFolder);
 
-      try {
-        const result = await uploadFromBuffer(req.file.buffer);
-        console.log(`[Cloudinary] Uploaded image to folder '${cloudinaryFolder}': ${result.secure_url}`);
+    const isCloudinaryUrl = uploadedUrl && uploadedUrl.includes('cloudinary.com');
 
-        return res.status(200).json({
-          success: true,
-          message: `Image uploaded successfully to Cloudinary folder '${cloudinaryFolder}'`,
-          data: {
-            url: result.secure_url,
-            public_id: result.public_id,
-            folder: result.folder || cloudinaryFolder,
-          },
-        });
-      } catch (uploadErr) {
-        console.warn(`[Cloudinary Upload Warning] Cloudinary API failed: ${uploadErr.message || JSON.stringify(uploadErr)}. Falling back to Data-URI.`);
-        
-        // Automatic fallback: convert buffer to base64 Data URI so image upload succeeds without breaking the user experience
-        const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
-
-        return res.status(200).json({
-          success: true,
-          message: `Cloudinary fallback active (${uploadErr.message || 'Error'}). Image saved.`,
-          data: {
-            url: base64Image,
-            public_id: 'fallback_' + Date.now(),
-            folder: cloudinaryFolder,
-          },
-        });
-      }
-    } else {
-      // Development Fallback: Convert buffer to inline Data URI
-      const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
-
-      return res.status(200).json({
-        success: true,
-        message: 'Image processed (Local Data URI mode)',
-        data: {
-          url: base64Image,
-          public_id: 'local_' + Date.now(),
-          folder: cloudinaryFolder,
-        },
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      message: isCloudinaryUrl
+        ? `Image uploaded successfully to Cloudinary folder '${cloudinaryFolder}'`
+        : 'Image processed (Data URI fallback mode)',
+      data: {
+        url: uploadedUrl,
+        public_id: 'img_' + Date.now(),
+        folder: cloudinaryFolder,
+      },
+    });
   } catch (error) {
     next(error);
   }
 };
 
 module.exports = { uploadImage };
+

@@ -76,8 +76,8 @@ const ItemForm = ({
     }
   };
 
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
@@ -86,23 +86,33 @@ const ItemForm = ({
     }
 
     setImageFile(file);
-    const localPreviewUrl = URL.createObjectURL(file);
-    setImagePreview(localPreviewUrl);
 
-    try {
-      setIsUploadingImage(true);
-      info('Uploading image to Cloudinary...');
-      const targetFolder = formData.type || 'items';
-      const res = await uploadImage(file, targetFolder);
-      if (res.success && res.data.url) {
-        setFormData((prev) => ({ ...prev, image: res.data.url }));
-        success('Image uploaded successfully!');
+    // Pixel-Heist pattern: Instant local FileReader preview and base64 store
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64 = event.target?.result;
+      if (base64) {
+        setImagePreview(base64);
+        setFormData((prev) => ({ ...prev, image: base64 }));
+
+        try {
+          setIsUploadingImage(true);
+          const targetFolder = formData.type || 'items';
+          const res = await uploadImage(file, targetFolder);
+          if (res.success && res.data?.url) {
+            setFormData((prev) => ({ ...prev, image: res.data.url }));
+            if (res.data.url.includes('cloudinary.com')) {
+              success('Image uploaded to Cloudinary CDN!');
+            }
+          }
+        } catch (err) {
+          console.warn('Cloudinary upload fallback active:', err);
+        } finally {
+          setIsUploadingImage(false);
+        }
       }
-    } catch (err) {
-      toastError(err.response?.data?.message || 'Failed to upload image.');
-    } finally {
-      setIsUploadingImage(false);
-    }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleRemoveImage = () => {
