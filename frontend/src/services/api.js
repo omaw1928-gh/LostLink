@@ -1,11 +1,18 @@
 import axios from 'axios';
 
+// Automatically use local proxy in development, and deployed Render backend in production
+const defaultApiUrl = import.meta.env.DEV
+  ? '/api'
+  : 'https://lostlink-6ree.onrender.com/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: import.meta.env.VITE_API_URL || defaultApiUrl,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+
 
 // Request interceptor: Attach JWT token if available
 api.interceptors.request.use(
