@@ -1,0 +1,79 @@
+%% ─────────────────────────────────────────────────────────────────────────────
+%%  LostLink — Scaled Cloud Architecture with Cloud Bursting
+%%  Assignment 3: Question 1(d) Implementation Diagram
+%% ─────────────────────────────────────────────────────────────────────────────
+
+flowchart TB
+    %% Styling Classes
+    classDef clientStyle fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff,font-family:Arial;
+    classDef frontendStyle fill:#0f172a,stroke:#06b6d4,stroke-width:2px,color:#ffffff,font-family:Arial;
+    classDef nginxStyle fill:#064e3b,stroke:#10b981,stroke-width:3px,color:#ffffff,font-family:Arial;
+    classDef primaryBackendStyle fill:#1e3a5f,stroke:#38bdf8,stroke-width:2px,color:#ffffff,font-family:Arial;
+    classDef burstStyle fill:#4c1d95,stroke:#c084fc,stroke-width:3px,color:#ffffff,stroke-dasharray: 6 4,font-family:Arial;
+    classDef renderHostStyle fill:#374151,stroke:#9ca3af,stroke-width:2px,color:#ffffff,font-family:Arial;
+    classDef databaseStyle fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#ffffff,font-family:Arial;
+    classDef mediaStyle fill:#831843,stroke:#f472b6,stroke-width:2px,color:#ffffff,font-family:Arial;
+
+    %% ── 1. Client & Presentation Layer ──
+    subgraph ClientLayer [" 📱 Client Layer "]
+        CLIENT["🎓 <b>Campus Users</b><br/>Students & Staff (Browsers & Mobile)<br/>10,000+ Active Rush Accounts"]:::clientStyle
+    end
+
+    subgraph PresentationTier [" 🌐 Presentation Tier "]
+        FRONTEND["⚡ <b>LostLink Frontend SPA</b><br/><b>Vercel Global Edge Network</b><br/>Framework: React 18 + Vite SPA<br/>URL: https://lost-link-ten.vercel.app<br/>Port: <b>443 (HTTPS)</b>"]:::frontendStyle
+    end
+
+    %% ── 2. Ingress & Traffic Management Layer ──
+    subgraph LoadBalancerTier [" ⚖️ Traffic Ingress & Load Balancing Tier "]
+        NGINX["🛡️ <b>Nginx Reverse Proxy & Load Balancer</b><br/>Container: <code>lostlink-nginx</code> (Alpine 1.27)<br/>Host Port: <b>8080</b> ➔ Container Port: <b>80</b><br/>Algorithm: Dynamic Threshold & Round-Robin<br/>Policy: <code>proxy_next_upstream</code> Zero-Downtime Failover"]:::nginxStyle
+    end
+
+    %% ── 3. Application Logic Tier ──
+    subgraph PrimaryCluster [" 🐳 Primary Backend Cluster (Baseline Capacity) "]
+        B1["🔷 <b>lostlink-backend1</b><br/>Node.js + Express.js API<br/>Internal Port: <b>5000</b><br/>Header: <code>X-LostLink-Instance=backend1</code>"]:::primaryBackendStyle
+        B2["🔷 <b>lostlink-backend2</b><br/>Node.js + Express.js API<br/>Internal Port: <b>5000</b><br/>Header: <code>X-LostLink-Instance=backend2</code>"]:::primaryBackendStyle
+        B3["🔷 <b>lostlink-backend3</b><br/>Node.js + Express.js API<br/>Internal Port: <b>5000</b><br/>Header: <code>X-LostLink-Instance=backend3</code>"]:::primaryBackendStyle
+    end
+
+    %% ── 4. Cloud Bursting Component (Highlighted in Vivid Purple) ──
+    subgraph CloudBurstTier [" 🟣 ELASTIC CLOUD BURSTING COMPONENT (Question 1d) "]
+        BURST["🚀 <b>lostlink-backend-burst</b><br/><b>Elastic Cloud Burst Node</b><br/>Container / Cloud Instance: Node.js + Express<br/>Internal Port: <b>5000</b><br/>Header: <code>X-LostLink-Instance=backend-burst</code><br/><i>• Auto-engaged when load exceeds 100 req/s</i><br/><i>• Absorbs peak hostel vacating surge</i><br/><i>• Automatic fallback to primaries if offline</i>"]:::burstStyle
+    end
+
+    %% ── 5. Assignment 1 Cloud Platform ──
+    subgraph Assignment1Platform [" ☁️ Assignment 1 Cloud Hosting Platform "]
+        RENDER["🌐 <b>Render Web Service</b><br/>URL: https://lostlink-6ree.onrender.com<br/>Port: <b>443 (HTTPS)</b><br/>(Original Single-Instance Production Host)"]:::renderHostStyle
+    end
+
+    %% ── 6. Persistent Cloud Data & Media Storage Tier ──
+    subgraph DataStorageTier [" 💾 Persistent Cloud Data Tier (Shared Single Source of Truth) "]
+        ATLAS[("🍃 <b>MongoDB Atlas Cluster0</b><br/>Cloud Provider: AWS ap-south-1 (Mumbai)<br/>Collections: <code>users</code>, <code>items</code>, <code>claims</code><br/>Port: <b>27017 (TLS SRV)</b><br/>Shared by All Primary & Burst Instances")]:::databaseStyle
+        CLOUDINARY["☁️ <b>Cloudinary Media CDN</b><br/>Cloud: <code>v6e9uxyo</code> | Folder: <code>lostlink/</code><br/>Format: auto (WebP) | Resize: 1200x1200<br/>Port: <b>443 (HTTPS)</b>"]:::mediaStyle
+    end
+
+    %% ── Request Flow Relationships ──
+    CLIENT -->|1. HTTPS Navigation| FRONTEND
+    FRONTEND -->|2. REST API Calls: /api/items, /api/health| NGINX
+
+    %% Normal Traffic Flow (Baseline)
+    NGINX -->|3a. Normal Traffic: Round-Robin| B1
+    NGINX -->|3b. Normal Traffic: Round-Robin| B2
+    NGINX -->|3c. Normal Traffic: Round-Robin| B3
+
+    %% Burst Traffic Flow (Surge Threshold Exceeded)
+    NGINX ==>|4. Peak Surge Burst Overflow &gt; 100 req/s| BURST
+
+    %% Shared Cloud Data Connections
+    B1 -->|Mongoose Connection Pool| ATLAS
+    B2 -->|Mongoose Connection Pool| ATLAS
+    B3 -->|Mongoose Connection Pool| ATLAS
+    BURST -->|Shared Mongoose Connection Pool| ATLAS
+
+    %% Media Assets Flow
+    B1 -.->|Image Uploads| CLOUDINARY
+    B2 -.->|Image Uploads| CLOUDINARY
+    B3 -.->|Image Uploads| CLOUDINARY
+    BURST -.->|Image Uploads| CLOUDINARY
+
+    %% Assignment 1 Original Linkage
+    RENDER -.->|Assignment 1 Standalone Backend| ATLAS

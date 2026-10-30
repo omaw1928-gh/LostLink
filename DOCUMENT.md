@@ -1,4 +1,4 @@
-﻿# BACE344 — Cloud Infrastructure and Architecture
+# BACE344 — Cloud Infrastructure and Architecture
 ## Digital Assignment — Technical Documentation
 
 | | |
@@ -20,6 +20,7 @@
 3. [Database & REST API Integration](#3-database--rest-api-integration)
 4. [Cloud Deployment & Integration](#4-cloud-deployment--integration)
 5. [Documentation & Demonstration](#5-documentation--demonstration)
+6. [Digital Assignment 3: Application Scaling & High Availability](file:///c:/Users/vinay/Desktop/git-reps/LostLink/ASSIGNMENT_3_REPORT.md)
 
 ---
 

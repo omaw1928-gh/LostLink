@@ -9,18 +9,32 @@ try {
 } catch (e) {}
 
 const connectDB = async () => {
-  try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/lostlink';
-    const conn = await mongoose.connect(mongoURI, {
-      serverSelectionTimeoutMS: 15000,
-    });
-    console.log(`[Database] MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error(`[Database Error] ${error.message}`);
-    console.warn(`[Database Note] If using MongoDB Atlas, check your IP whitelist and MONGODB_URI in backend/.env`);
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
+  const primaryURI = process.env.MONGODB_URI;
+  const fallbackURI = process.env.FALLBACK_MONGODB_URI || 'mongodb://mongo:27017/lostlink';
+
+  // 1. Try Primary Cloud Database (MongoDB Atlas)
+  if (primaryURI) {
+    try {
+      const conn = await mongoose.connect(primaryURI, {
+        serverSelectionTimeoutMS: 4000,
+      });
+      console.log(`[Database] Connected to Primary Cloud Database: ${conn.connection.host}`);
+      return;
+    } catch (primaryErr) {
+      console.warn(`[Database Warning] Primary connection failed (${primaryErr.message}).`);
+      console.log(`[Database Failover] Activating failover database at ${fallbackURI}...`);
     }
+  }
+
+  // 2. Try Fallback Database (Containerized / Local)
+  try {
+    const conn = await mongoose.connect(fallbackURI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    console.log(`[Database] Failover Database Active: ${conn.connection.host}`);
+  } catch (fallbackErr) {
+    console.error(`[Database Error] Fallback database failed: ${fallbackErr.message}`);
+    // Keep server process running so /api/health responds
   }
 };
 

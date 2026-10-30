@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+/**
+ * Protect routes: verifies JWT bearer token
+ */
 const protect = async (req, res, next) => {
   let token;
 
@@ -24,6 +27,14 @@ const protect = async (req, res, next) => {
       process.env.JWT_SECRET || 'lostlink_super_secret_jwt_key_campus_2025_secure_token'
     );
 
+    // Prevent using short-lived MFA challenge tokens on general protected APIs
+    if (decoded.purpose === 'mfa-challenge') {
+      return res.status(401).json({
+        success: false,
+        message: 'MFA verification required: challenge token cannot access protected APIs',
+      });
+    }
+
     const user = await User.findById(decoded.id).select('-password');
     if (!user) {
       return res.status(401).json({
@@ -42,6 +53,9 @@ const protect = async (req, res, next) => {
   }
 };
 
+/**
+ * Restrict to admin users only
+ */
 const adminOnly = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
     next();
@@ -53,4 +67,23 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly };
+/**
+ * Role-Based Access Control (RBAC): restrict route to specific roles
+ */
+const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: `Access denied: Role '${req.user ? req.user.role : 'unauthenticated'}' is not authorized for this resource`,
+      });
+    }
+    next();
+  };
+};
+
+module.exports = {
+  protect,
+  adminOnly,
+  authorizeRoles,
+};

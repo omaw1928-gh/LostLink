@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────
+#  LostLink Backend — Docker Image
+#  Node.js 20 LTS (Alpine) — small, production-grade base image
+# ─────────────────────────────────────────────────────────────
+
+# Stage: production
+FROM node:20-alpine
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy package manifests first (layer caching — only re-runs npm ci
+# when package files change, not on every source code change)
+COPY package.json package-lock.json ./
+
+# Install ONLY production dependencies using the exact locked versions.
+# --omit=dev skips devDependencies (e.g. nodemon) to keep the image lean.
+# npm ci requires a valid package-lock.json (lockfileVersion 3 ✓).
+RUN npm ci --omit=dev
+
+# Copy the rest of the application source code
+COPY . .
+
+# Default environment — can be overridden in docker-compose.yml or at runtime
+ENV NODE_ENV=production
+ENV PORT=5000
+
+# Expose the port the Express server listens on
+EXPOSE 5000
+
+# Start the server using the existing entry point
+CMD ["node", "server.js"]

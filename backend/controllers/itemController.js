@@ -185,14 +185,15 @@ const updateItem = async (req, res, next) => {
       });
     }
 
-    // Check ownership or admin
-    if (
-      item.reportedBy.toString() !== req.user._id.toString() &&
-      req.user.role !== 'admin'
-    ) {
+    // RBAC: Check ownership, moderator, or admin role
+    const isOwner = item.reportedBy.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+    const isModerator = req.user.role === 'moderator';
+
+    if (!isOwner && !isAdmin && !isModerator) {
       return res.status(403).json({
         success: false,
-        message: 'Not authorized to update this item report',
+        message: 'Not authorized to update this item report. Only the owner, moderator, or admin can modify items.',
       });
     }
 
@@ -248,14 +249,14 @@ const deleteItem = async (req, res, next) => {
       });
     }
 
-    // Check ownership or admin
-    if (
-      item.reportedBy.toString() !== req.user._id.toString() &&
-      req.user.role !== 'admin'
-    ) {
+    // RBAC: Only item owner or admin can permanently delete
+    const isOwner = item.reportedBy.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isOwner && !isAdmin) {
       return res.status(403).json({
         success: false,
-        message: 'Not authorized to delete this item report',
+        message: 'Not authorized to delete this item report. Only the owner or an administrator can delete reports.',
       });
     }
 
@@ -294,13 +295,14 @@ const updateStatus = async (req, res, next) => {
       });
     }
 
-    if (
-      item.reportedBy.toString() !== req.user._id.toString() &&
-      req.user.role !== 'admin'
-    ) {
+    const isOwner = item.reportedBy.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+    const isModerator = req.user.role === 'moderator';
+
+    if (!isOwner && !isAdmin && !isModerator) {
       return res.status(403).json({
         success: false,
-        message: 'Not authorized to change status for this item',
+        message: 'Not authorized to change status for this item. Only the owner, moderator, or admin can update status.',
       });
     }
 

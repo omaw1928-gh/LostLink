@@ -10,6 +10,9 @@ backend/node_modules/
 frontend/.env
 backend/.env
 
+# Docker Compose local overrides and secrets
+docker-compose.override.yml
+
 # Build outputs
 frontend/dist/
 frontend/build/
@@ -28,3 +31,25 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# Security scan outputs & reports
+trivy_baseline.json
+trivy_hardened.json
+trivy_*.json
+*.tmp
+
+# Test and coverage artifacts
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+cypress/videos/
+cypress/screenshots/
+junit*.xml
+
+# Python test/tool caches
+.pytest_cache/
+__pycache__/
+*.py[cod]
+.coverage
+.coverage.*
